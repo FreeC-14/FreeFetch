@@ -1,0 +1,187 @@
+#!/bin/bash
+
+# =============================================
+# sussyfetch.sh - Minimalist System Info Script
+# Author: zenox1543
+# License: GPL 3
+# Its my first bash script rn
+#
+# Features:
+# - OS, Kernel, Uptime, Packages, Shell
+# - Resolution, DE/WM, Theme, Terminal
+# - CPU, Memory, Disk, Battery, Color Test
+# - No external dependencies (fallback safe)
+# =============================================
+
+# ANSI Color Codes
+BOLD=$(tput bold)
+RESET=$(tput sgr0)
+GRAY=$(tput setaf 8)
+
+# ========================
+# System Information APIs
+# ========================
+
+# Get OS Distribution
+get_os() {
+    # Tries multiple sources for OS information
+    if [ -f /etc/os-release ]; then
+        # Standard os-release file
+        . /etc/os-release
+        echo "$NAME $VERSION_ID"
+    elif [ -f /etc/arch-release ]; then
+        echo "Arch Linux"
+    elif [ -f /etc/debian_version ]; then
+        echo "Debian $(cat /etc/debian_version)"
+    else
+        echo "Unknown OS"
+    fi
+}
+
+# Get Kernel Version
+get_kernel() {
+    uname -r
+}
+
+# Get Uptime in Days/Hours
+get_uptime() {
+    # Uses uptime command if available
+    if uptime -p &>/dev/null; then
+        uptime -p | sed 's/up //'
+    else
+        # Fallback to /proc/uptime
+        local secs=$(cat /proc/uptime | awk '{print $1}')
+        printf "%dd %dh" $((secs/86400)) $(( (secs%86400)/3600 ))
+    fi
+}
+
+# Count Installed Packages
+get_packages() {
+    # Auto-detects package manager
+    if command -v dpkg &>/dev/null; then
+        dpkg --get-selections | wc -l | awk '{print $1}'
+    elif command -v rpm &>/dev/null; then
+        rpm -qa | wc -l
+    elif command -v pacman &>/dev/null; then
+        pacman -Qq | wc -l
+    else
+        echo "?"
+    fi
+}
+
+# Get Current Shell
+get_shell() {
+    echo "${SHELL##*/}"
+}
+
+# Get Screen Resolution
+get_resolution() {
+    if command -v xrandr &>/dev/null; then
+        xrandr | grep -w connected | awk '{print $3}' | paste -sd ","
+    else
+        echo "N/A"
+    fi
+}
+
+# Get Desktop Environment
+get_de() {
+    echo "${XDG_CURRENT_DESKTOP:-Unknown}"
+}
+
+# Get Window Manager
+get_wm() {
+    if command -v xprop &>/dev/null; then
+        xprop -root WM_NAME | awk -F '"' '/WM_NAME/ {print $2}'
+    else
+        echo "N/A"
+    fi
+}
+
+# Get GTK Theme Name
+get_theme() {
+    if [ -f ~/.config/gtk-3.0/settings.ini ]; then
+        grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini | cut -d= -f2 | xargs
+    else
+        echo "N/A"
+    fi
+}
+
+# Get Terminal Emulator
+get_terminal() {
+    echo "${TERM}"
+}
+
+# Get CPU Model Name
+get_cpu() {
+    if command -v lscpu &>/dev/null; then
+        lscpu | grep 'Model name' | cut -d: -f2 | sed 's/^[ \t]*//'
+    else
+        cat /proc/cpuinfo | grep 'model name' | head -n1 | cut -d: -f2 | sed 's/^[ \t]*//'
+    fi
+}
+
+# Get Memory Information
+get_memory() {
+    if command -v free &>/dev/null; then
+        free -h | grep Mem | awk '{print $2} total'
+    else
+        echo "N/A"
+    fi
+}
+
+# Get Disk Space
+get_disk() {
+    if command -v df &>/dev/null; then
+        df -h / | tail -n1 | awk '{print $2} total'
+    else
+        echo "N/A"
+    fi
+}
+
+# Get Battery Percentage
+get_battery() {
+    # Checks for common battery paths
+    for bat in /sys/class/power_supply/BAT*; do
+        if [ -d "$bat" ]; then
+            cat "${bat}/capacity"
+            return
+        fi
+    done
+    echo "N/A"
+}
+
+# Color Palette Test
+get_colors() {
+    # Prints 8 basic ANSI colors
+    for i in {0..7}; do
+        echo -ne "\e[38;5;${i}m █${RESET}"
+    done
+    echo
+}
+
+# ====================
+# Main Output Function
+# ====================
+main() {
+    echo "${BOLD}${GRAY}OS:${RESET}           $(get_os)"
+    echo "${BOLD}${GRAY}Kernel:${RESET}        $(get_kernel)"
+    echo "${BOLD}${GRAY}Uptime:${RESET}        $(get_uptime)"
+    echo "${BOLD}${GRAY}Packages:${RESET}      $(get_packages)"
+    echo "${BOLD}${GRAY}Shell:${RESET}         $(get_shell)"
+    echo "${BOLD}${GRAY}Resolution:${RESET}    $(get_resolution)"
+    echo "${BOLD}${GRAY}DE:${RESET}            $(get_de)"
+    echo "${BOLD}${GRAY}WM:${RESET}            $(get_wm)"
+    echo "${BOLD}${GRAY}Theme:${RESET}         $(get_theme)"
+    echo "${BOLD}${GRAY}Terminal:${RESET}      $(get_terminal)"
+    echo "${BOLD}${GRAY}CPU:${RESET}           $(get_cpu)"
+    echo "${BOLD}${GRAY}Memory:${RESET}        $(get_memory)"
+    echo "${BOLD}${GRAY}Disk:${RESET}          $(get_disk)"
+    echo "${BOLD}${GRAY}Battery:${RESET}       $(get_battery)%"
+    echo "${BOLD}${GRAY}Colors:${RESET}"
+    get_colors
+}
+
+# ========
+# Run Script
+# ========
+main
