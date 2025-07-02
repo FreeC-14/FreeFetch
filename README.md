@@ -1,6 +1,6 @@
-# Simple Fetch
+# FreeFetch
 
-Python ile yazılmış minimal sistem bilgi gösterici.
+Python ile yazılmış minimal,özgür sistem bilgi gösterici.
 
 ---
 
