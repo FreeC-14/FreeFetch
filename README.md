@@ -1,6 +1,27 @@
-# sussyfetch
-**its my first bash script it can be bad**
-# Installition
-curl -O https://raw.githubusercontent.com/zenox1543/repo/main/sussyfetch.sh 
-chmod +x sussyfetch.sh
-./sussyfetch.sh
+# Simple Fetch
+
+Python ile yazılmış minimal sistem bilgi gösterici.
+
+---
+
+## Özellikler
+
+- Aktif kullanıcı adı  
+- Bilgisayar adı (hostname)  
+- İşletim sistemi ve çekirdek sürümü  
+- Sistem çalışma süresi (dakika)  
+- ASCII kedi resmi
+
+---
+
+## Gereksinimler
+
+- Python 3.x  
+- Linux (`/proc/uptime` dosyasını okur)
+
+---
+
+## Kullanım
+
+```bash
+python3 fetch.py
