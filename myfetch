@@ -1,64 +1,25 @@
 
----
+import os
+import platform
 
-Simple Fetch
+def main():
+    print(" /\\_/\\ ")
+    print("( o.o )")
+    print(" > ^ <\n")
 
-Python ile yazılmış çok basit bir sistem bilgi gösterici. Kullanıcı, bilgisayar adı, işletim sistemi, çekirdek sürümü ve uptime bilgilerini gösterir. Ayrıca küçük bir ASCII kedi resmi basar.
+    user = os.environ.get("USER", "unknown")
+    host = platform.node()
+    osname = platform.system()
+    kernel = platform.release()
 
-Özellikler
+    with open("/proc/uptime") as f:
+        up = int(float(f.readline().split()[0]) / 60)
 
-Şu anki kullanıcı adını gösterir
+    print("User    :", user)
+    print("Host    :", host)
+    print("OS      :", osname)
+    print("Kernel  :", kernel)
+    print("Uptime  :", up, "mins")
 
-Bilgisayar adını (hostname) gösterir
-
-İşletim sistemi ve çekirdek sürümünü gösterir
-
-Sistem açık kalma süresini (dakika cinsinden) gösterir
-
-Basit ASCII kedi resmi yazdırır
-
-Linux sistemlerde çalışır
-
-
-Gereksinimler
-
-Python 3.x
-
-Linux (çünkü uptime için /proc/uptime dosyasını okur)
-
-
-Kullanım
-
-Terminalde şu şekilde çalıştır:
-
-python3 fetch.py
-
-Örnek çıktı:
-
-/\_/\
-( o.o )
- > ^ <
-
-User    : kullaniciadi
-Host    : bilgisayaradi
-OS      : Linux
-Kernel  : 5.15.0-xyz
-Uptime  : 123 dakika
-
-Kod Yapısı
-
-main() fonksiyonu tüm bilgileri toplar ve yazdırır
-
-os ve platform modüllerini kullanır
-
-Sistem uptime bilgisini /proc/uptime dosyasından okur
-
-
-Lisans
-
-Bu proje GPL Lisansı ile lisanslanmıştır.
-
-
----
-
-
+if __name__ == "__main__":
+    main()
