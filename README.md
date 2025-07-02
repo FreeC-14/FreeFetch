@@ -25,3 +25,6 @@ Python ile yazılmış minimal,özgür sistem bilgi gösterici.
 
 ```bash
 python3 fetch.py
+```
+> FreeFetch projesi yakinda önemli bir karar alacaktir
+> GO,Nim,Vlang gibi dillerle tekrar yazilacaktir
