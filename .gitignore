@@ -1,0 +1,26 @@
+# Compiled binaries
+freefetch
+*.exe
+*.out
+
+# Nim cache files
+nimcache/
+*.nimcache/
+*.o
+*.obj
+
+# Backup/editor files
+*.log
+*.swp
+*.bak
+*~
+
+# MacOS / Linux / Windows system files
+.DS_Store
+Thumbs.db
+
+# Nimble packages (optional)
+pkg/
+
+# Build artifacts
+build/
