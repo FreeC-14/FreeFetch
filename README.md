@@ -1,6 +1,6 @@
 # FreeFetch
 
-FreeFetch is a very simple system info tool written in Nim.  
+FreeFetch is a very simple system info tool written in Nim for TRKG package manager.  
 It shows user, host, OS, kernel, CPU, uptime, desktop environment, window manager, and package count.
 
 ## How to use
