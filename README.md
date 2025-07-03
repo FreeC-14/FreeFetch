@@ -1,30 +1,37 @@
 # FreeFetch
 
-Python ile yazılmış minimal,özgür sistem bilgi gösterici.
+FreeFetch is a very simple system info tool written in Nim.  
+It shows user, host, OS, kernel, CPU, uptime, desktop environment, window manager, and package count.
+
+## How to use
+
+1. Download or clone this repo.  
+2. Compile with Nim:
+3. Run it, and see your system info.
+
+## Why Nim?
+
+- Nim is easy to learn but very fast.  
+- This tool is small and has no big dependencies.
+
+## Features
+
+- Shows username and hostname  
+- Shows OS and kernel info (`uname -s -a`)  
+- Reads CPU model from `/proc/cpuinfo`  
+- Shows uptime in minutes  
+- Shows desktop environment and window manager from environment variables  
+- Counts packages for Arch Linux pacman users (optional)  
+- Cute little ASCII cat logo
+
+## TODO
+
+- Add GPU info  
+- Support more package managers  
+- Add screen resolution and refresh rate
 
 ---
 
-## Özellikler
+## License
 
-- Aktif kullanıcı adı  
-- Bilgisayar adı (hostname)  
-- İşletim sistemi ve çekirdek sürümü  
-- Sistem çalışma süresi (dakika)  
-- ASCII kedi resmi
-
----
-
-## Gereksinimler
-
-- Python 3.x  
-- Linux (`/proc/uptime` dosyasını okur)
-
----
-
-## Kullanım
-
-```bash
-python3 fetch.py
-```
-> FreeFetch projesi yakinda önemli bir karar alacaktir
-> GO,Nim,Vlang gibi dillerle tekrar yazilacaktir
+GPL3 License
