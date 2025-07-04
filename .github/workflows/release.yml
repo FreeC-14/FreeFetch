@@ -1,0 +1,69 @@
+name: Build & Release FreeFetch for multiple architectures
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        arch: [x86_64, arm64, armhf]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Install cross-compilers and build tools
+      run: |
+        sudo apt-get update
+        if [ "${{ matrix.arch }}" = "arm64" ]; then
+          sudo apt-get install -y gcc-aarch64-linux-gnu zip
+        elif [ "${{ matrix.arch }}" = "armhf" ]; then
+          sudo apt-get install -y gcc-arm-linux-gnueabihf zip
+        else
+          sudo apt-get install -y gcc zip
+        fi
+
+    - name: Build FreeFetch for ${{ matrix.arch }}
+      run: |
+        if [ "${{ matrix.arch }}" = "arm64" ]; then
+          aarch64-linux-gnu-gcc -o freefetch freefetch.c
+        elif [ "${{ matrix.arch }}" = "armhf" ]; then
+          arm-linux-gnueabihf-gcc -o freefetch freefetch.c
+        else
+          gcc -o freefetch freefetch.c
+        fi
+
+    - name: Zip the binary
+      run: zip freefetch-${{ matrix.arch }}.zip freefetch
+
+    - name: Upload artifact for ${{ matrix.arch }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: freefetch-${{ matrix.arch }}
+        path: freefetch-${{ matrix.arch }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: ./artifacts/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
