@@ -1,0 +1,31 @@
+name: Build on Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: debian-wsl-1
+
+    steps:
+      - name: Depoyu klonla
+        uses: actions/checkout@v3
+
+      - name: Nim kurulumu
+        uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: 'stable'
+
+      - name: Freefetch derle
+        run: nim c -d:release freefetch.nim
+
+      - name: Zip oluştur
+        run: zip freefetch.zip freefetch
+
+      - name: Release'e yükle
+        uses: softprops/action-gh-release@v1
+        with:
+          files: freefetch.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
