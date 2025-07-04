@@ -1,0 +1,26 @@
+name: FreeFetch Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: debian-wsl-1
+
+    steps:
+    - name: Depoyu klonla
+      uses: actions/checkout@v3
+
+    - name: Nim kurulumu
+      uses: jiro4989/setup-nim-action@v1
+      with:
+        nim-version: 'stable'
+
+    - name: Freefetch derle
+      run: |
+        nim c -d:release freefetch.nim
+
+    - name: Derleme başarılı
+      if: success()
+      run: echo "✅ FreeFetch başarıyla derlendi!"
